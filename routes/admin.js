@@ -14,7 +14,7 @@ var maintenance = db.get("settings.maintenance").value()
 //console.log(maintenance)
 
 app.get('/admin', function(req, res){
-    res.sendFile(path.join(`${__dirname} + ../pages/` + "/admin/login.html"))
+    res.sendFile(path.join(main+ `admin/login.html`))
     })
   
     app.use("/uploaded", express.static(`${__dirname}/uploaded/`))

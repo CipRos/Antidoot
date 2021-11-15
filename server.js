@@ -1,10 +1,91 @@
-// server.js
-// where your node app starts
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config()
+}
 
-// we've started you off with Express (https://expressjs.com/)
-// but feel free to use whatever libraries or frameworks you'd like through `package.json`.
-const express = require("express");
-const app = express();
+const express = require('express')
+const app = express()
+//const bcrypt = require('bcrypt')
+const passport = require('passport')
+const flash = require('express-flash')
+const session = require('express-session')
+const methodOverride = require('method-override')
+
+const initializePassport = require('./passport-config')
+initializePassport(
+  passport,
+  email => users.find(user => user.email === email),
+  id => users.find(user => user.id === id)
+)
+
+const users = []
+
+app.set('view-engine', 'ejs')
+app.use(express.urlencoded({ extended: false }))
+app.use(flash())
+app.use(session({
+  secret: process.env.SESSION_SECRET,
+  resave: false,
+  saveUninitialized: false
+}))
+app.use(passport.initialize())
+app.use(passport.session())
+app.use(methodOverride('_method'))
+
+app.get('/', checkAuthenticated, (req, res) => {
+  if(req.user) return res.render('../pages/home.ejs', { name: req.user.name, loggedIn: true  })
+  res.render('../pages/home.ejs', { name: "You should really make an account", loggedIn:false })
+})
+
+app.get('/login', checkNotAuthenticated, (req, res) => {
+  res.render('login.ejs')
+})
+
+app.post('/login', checkNotAuthenticated, passport.authenticate('local', {
+  successRedirect: '/',
+  failureRedirect: '/login',
+  failureFlash: true
+}))
+
+app.get('/register', checkNotAuthenticated, (req, res) => {
+  res.render('register.ejs')
+})
+
+app.post('/register', checkNotAuthenticated, async (req, res) => {
+  try {
+    const hashedPassword = req.body.password//await bcrypt.hash(req.body.password, 10)
+    users.push({
+      id: Date.now().toString(),
+      name: req.body.name,
+      email: req.body.email,
+      password: hashedPassword
+    })
+    console.log(users)
+    res.redirect('/login')
+  } catch {
+    res.redirect('/register')
+  }
+})
+
+app.delete('/logout', (req, res) => {
+  req.logOut()
+  res.redirect('/')
+})
+
+function checkAuthenticated(req, res, next) {
+  // if (req.isAuthenticated()) {
+    return next()
+  // }
+
+  // res.redirect('/login')
+}
+
+function checkNotAuthenticated(req, res, next) {
+  if (req.isAuthenticated()) {
+    return res.redirect('/')
+  }
+  next()
+}
+
 const http = require("http")
 const server = http.createServer(app)
 var bodyParser = require("body-parser");
@@ -39,15 +120,15 @@ var maintenance = db.get("settings.maintenance").value()
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({extended: true})); 
   
-  const indexRoute = require("./routes/index")
-  const dashboardRoute = require("./routes/dashboard")
-  const apiRoute = require("./routes/api")
-  const gamesRoutes = require("./routes/games")
+  // const indexRoute = require("./routes/index")
+  // const dashboardRoute = require("./routes/dashboard")
+  // const apiRoute = require("./routes/api")
+  // const gamesRoutes = require("./routes/games")
 
   if(maintenance=="true") {
     console.log("\nMAINTENANCE MODE IS ON");
-    app.use("/dashboard", dashboardRoute);
-    app.use("/api", apiRoute);
+    // app.use("/dashboard", dashboardRoute);
+    // app.use("/api", apiRoute);
     app.get('*', function(req, res){
        res.send("Maintenance is in progress")
     })
@@ -58,10 +139,32 @@ var maintenance = db.get("settings.maintenance").value()
     res.setHeader('Access-Control-Allow-Origin', '*');
     next();
   });
-  app.use("/", indexRoute);
-  app.use("/dashboard", dashboardRoute);
-  app.use("/api", apiRoute);
-  app.use("/games", gamesRoutes);
+
+var normalizedPath = path.join(__dirname, "routes");
+var startTime, endTime
+var totalTime=0;
+console.log("<---------------------------------------------------->")
+require("fs").readdirSync(normalizedPath).forEach(function(file) {
+  startTime = new Date();
+  require("./routes/" + file)(app);
+  var lefile = file.replace(".js", "");
+  endTime = new Date();
+  var timeDiff = endTime - startTime;
+  console.log("Loaded " + lefile + " route in " + timeDiff +"ms!")
+  totalTime = totalTime + timeDiff
+});
+  //The 404 Route (ALWAYS Keep this as the last route)
+app.get('*', function(req, res){
+  res.sendFile(path.join(__dirname + "/pages/hidden/404.html"))
+});
+  
+console.log("---------------------------------------")
+console.log("Everything loaded in "+ totalTime + "ms")
+
+  // app.use("/", indexRoute);
+  // app.use("/dashboard", dashboardRoute);
+  // app.use("/api", apiRoute);
+  // app.use("/games", gamesRoutes);
 
   app.get('/admin', function(req, res){
     res.sendFile(__dirname+"/pages/admin/login.html")
@@ -133,8 +236,8 @@ io.on('connection', function(socket) {
 //  res.send("404 Bruh");//File(path.join(__dirname + "/pages/hidden/404.html"))
 //});
 
-
-// listen for requests :)
 const listener = server.listen(1337, () => {
   console.log("Your app is listening on port " + listener.address().port);
 });
+
+//app.listen(3000)

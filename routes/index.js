@@ -1,5 +1,5 @@
 var path = require("path");
-var app = require("express").Router()
+var app = function(app){
 var express = require("express");
   
 const low = require('lowdb')
@@ -24,12 +24,12 @@ function makeid(length) {
  }
 
 app.get('/', function(req, res){
-    res.sendFile(path.join(main + "/home.html"))
+    res.render(path.join(main + "/home.ejs"), { name: "Kyle"})
 });
 
 app.use("/files/", function(req, res){
     res.sendFile(path.join(__dirname+req.originalUrl))
 });
-
+}
 
 module.exports = app;

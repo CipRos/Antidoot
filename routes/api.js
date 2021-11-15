@@ -1,6 +1,6 @@
 const fileUpload = require('express-fileupload');
 const multer = require('multer');
-const app = require("express").Router();
+const app = function(app){
 const fs = require("fs");
 
   
@@ -19,7 +19,7 @@ app.use(fileUpload({
   createParentPath: true
 }));
 
-app.get("/", async function(req, res) {
+app.get("/api", async function(req, res) {
     res.send("OK");
 });
 
@@ -27,7 +27,7 @@ const upload = multer({
   dest: "./uploaded"
 });
 
-app.post('/upload', upload.single('image'), (req, res, next) => {
+app.post('/api/upload', upload.single('image'), (req, res, next) => {
   let upFile = req.files.image;
   let ext = upFile.name.split(".")
   
@@ -47,7 +47,7 @@ app.post('/upload', upload.single('image'), (req, res, next) => {
     res.send(html);
   });
 
-  app.get("/game/json/:uid", async function(req, res) {
+  app.get("/api/game/json/:uid", async function(req, res) {
     var user = await db.get("antidoot."+req.params.uid).value()
     if(!user){
       var uzer = await db.set("antidoot."+req.params.uid, {"points": 0, "multi": 1, "isCheater": "false"}).write()
@@ -62,7 +62,7 @@ app.post('/upload', upload.single('image'), (req, res, next) => {
   res.send({"points": points, "multi": multi, "isCheater": cheats})
   });
 
-app.get("/game/json/:uid/points/:setp/multi/:multi/isCheater/:ic", async function(req, res) {
+app.get("/api/game/json/:uid/points/:setp/multi/:multi/isCheater/:ic", async function(req, res) {
    var user = await db.get("antidoot."+req.params.uid).value()
    if(!user){return res.send({"status": "User does not exist!"})}
      await db.set("antidoot."+req.params.uid+".points", req.params.setp).write()
@@ -71,7 +71,7 @@ app.get("/game/json/:uid/points/:setp/multi/:multi/isCheater/:ic", async functio
      res.send({"status": "Complete!"})
 });
 
-app.get("/game/json/:uid/points/:setp/multi/:multi", async function(req, res) {
+app.get("/api/game/json/:uid/points/:setp/multi/:multi", async function(req, res) {
    var user = await db.get("antidoot."+req.params.uid).value()
    if(!user){return res.send({"status": "User does not exist!"})}
   //Cheat checker
@@ -92,7 +92,7 @@ app.get("/game/json/:uid/points/:setp/multi/:multi", async function(req, res) {
      res.send({"status": "Complete!"})
 });
 
-app.post("/loogin", (req, res) => {
+app.post("/api/loogin", (req, res) => {
   var usr = req.body.usr;
   var pwd = req.body.pwd;
   var today  = new Date();
@@ -104,7 +104,7 @@ app.post("/loogin", (req, res) => {
     res.send("/admin");
 }});
   
-  app.post("/settings", (req, res) => {
+  app.post("/api/settings", (req, res) => {
   var today  = new Date();
   var time = today.toLocaleString("en-US")
   //console.log("["+time+"] New activity from Admin Pannel")
@@ -157,5 +157,5 @@ app.post("/loogin", (req, res) => {
       res.send("Worked");
       //require('child_process').exec('refresh');
   }});
-
+}
 module.exports = app;
