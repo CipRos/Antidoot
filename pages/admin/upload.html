@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Projects made by CipX"/>
+    <title> CipX's File Uploader </title>
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="icon" href="https://cdn.glitch.com/5484096a-b1cc-42f9-8223-664598d25db1%2Funnamed.png?v=1584119158373" type="image/gif" sizes="16x16">
+</head>
+  
+<style> 
+  
+  div {
+  height: 600px;
+  }
+  
+  body {
+    color: white;
+    background-color: black;
+  }
+  
+  .upload-btn-wrapper {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn {
+  border: 2px solid gray;
+  color: gray;
+  background-color: white;
+  padding: 8px 20px;
+  border-radius: 8px;
+  font-size: 10px;
+  font-weight: bold;
+}
+
+.upload-btn-wrapper input[type=file] {
+  font-size: 15px;
+  left: 0;
+  top: 0;
+  opacity: 100;
+  }
+  
+</style>
+  
+<body>
+  <h1 class="w3-center">CipX's Image Hosting</h1>
+    <div class="w3-blue w3-center w3-padding-64 upload-btn-wrapper" clss="container">
+        <form class="w3-center w3-blue" action="/api/upload" method="post" enctype="multipart/form-data">
+          <h2 class="w3-pading-64"> Upload a file </h2>
+            <input type="file" name="image" class="w3-pading-64 w3-center w3-bluew btn" required />
+            <button class="w3-round-xxlarge w3-pading-64 w3-circe w3-button w3-center w3-green" type="submit">Upload</button>
+        </form>
+    </div>
+  <div>
+    <h2>
+      Made with ❤ by CipX
+    </h2>
+  </div>
+</body>
+</html>

@@ -1,0 +1,181 @@
+<div id="main">
+  <h2 style="text-align: center;"><strong>Services Dashboard</strong></h2>
+  <label for="maintenance"><u>Maintenance</u>    <label class="switch">
+  <input id="cbm" type="checkbox">
+  <span class="slider round"></span>
+  </label><br>Status: </label>  
+  <label id="mons">Loading...</label>
+  <br>
+
+  <!--<button id="mon">ON</button>
+  <button id="moff">OFF</button>
+  --><br>
+  <br>
+  <label><u><b>
+    Others</b></u>
+  </label>
+  <br>
+  <label>Set a custom setting: </label>
+  <input placeholder="Setting" id="setting" type="text">
+  <input placeholder="Value" id="value" type="text">
+  <button id="set">Set</button>
+  <br>
+  <label id="setres"></label>
+  <br>
+  <br>
+  <label>Get a setting's value: </label>
+  <input placeholder="Setting" id="zetting" type="text">
+  <button id="get">Get</button>
+  <br>
+  <label id="getres"></label>
+</div>
+
+<script>
+  var rip = "localhost";
+  //'+sname+'
+  
+  var mons = document.getElementById("mons")
+  var cbm = document.getElementById("cbm")
+  //var mon = document.getElementById("mon")
+  //var moff = document.getElementById("moff")
+  
+  var dattt = {"ptype": "auto-get", "setting": "maintenance"}
+    //var timerStart = performance.now();
+  //setInterval(function(){
+    $.ajax({
+    type: 'post',
+    url: '/api/settings',   
+    data: JSON.stringify(dattt),
+    contentType: 'application/json',
+    xhrFields: {
+        withCredentials: false
+    },  
+    headers: {
+
+    }, 
+    success: function (data) {
+        if(data=="true"){
+          mons.style.color = "rgb(0,255,127)";
+          mons.innerText="ON"
+          cbm.checked = true
+        } else {
+          mons.style.color = "red";
+          mons.innerText="OFF"
+          cbm.checked = false
+        }
+    },  
+    error: function () {
+        console.log('We are sorry but our servers are having an issue right now');
+    }
+})//}, 3000);
+  
+  cbm.addEventListener("click", function(){
+    if(cbm.checked){
+      $.ajax({
+    type: 'post',
+    url: '/api/settings',   
+    data: JSON.stringify({"ptype":"mswitch", "setting": "maintenance", "value": "true"}),
+    contentType: 'application/json',
+    xhrFields: {
+        withCredentials: false
+    },  
+    headers: {
+
+    }, 
+    success: function (data) {
+        console.log(data);
+        mons.style.color = "rgb(0,255,127)";
+        mons.innerText = " ON"
+    },  
+    error: function () {
+        console.log('We are sorry but our servers are having an issue right now');
+    }
+})
+    } else {
+      $.ajax({
+    type: 'post',
+    url: '/api/settings',   
+    data: JSON.stringify({"ptype":"mswitch", "setting": "maintenance", "value": "false"}),
+    contentType: 'application/json',
+    xhrFields: {
+        withCredentials: false
+    },  
+    headers: {
+
+    }, 
+    success: function (data) {
+        console.log(data);
+        mons.style.color = "red";
+        mons.innerText="OFF"
+    },  
+    error: function () {
+        console.log('We are sorry but our servers are having an issue right now');
+    }
+})
+    }
+  });
+  
+  var seti = document.getElementById("setting")
+  var val = document.getElementById("value")
+  var set = document.getElementById("set")
+  
+  set.addEventListener("click", function(){
+  var seti = document.getElementById("setting")
+  var val = document.getElementById("value")  
+  var setres = document.getElementById("setres")
+  var datt = {
+    "ptype": "set",
+    "setting": seti.value, 
+    "value": val.value
+  }
+    //var timerStart = performance.now();
+    $.ajax({
+    type: 'post',
+    url: '/api/settings',   
+    data: JSON.stringify(datt),
+    contentType: 'application/json',
+    xhrFields: {
+        withCredentials: false
+    },  
+    headers: {
+
+    }, 
+    success: function (data) {
+      setres.innerText = data
+       // console.log(data);
+    },  
+    error: function () {
+        console.log('We are sorry but our servers are having an issue right now');
+    }
+})
+  });
+  
+  var zetting = document.getElementById("zetting")
+  var get = document.getElementById("get")
+  var getres = document.getElementById("getres")
+  
+  get.addEventListener("click", function(){
+    var dattt = {"ptype":"get", "setting": zetting.value}
+    //var timerStart = performance.now();
+    $.ajax({
+    type: 'post',
+    url: '/api/settings',   
+    data: JSON.stringify(dattt),
+    contentType: 'application/json',
+    xhrFields: {
+        withCredentials: false
+    },  
+    headers: {
+
+    }, 
+    success: function (data) {
+        getres.innerText = `${zetting.value} : ${data}`
+        //console.log(data);
+    },  
+    error: function () {
+        console.log('We are sorry but our servers are having an issue right now');
+    }
+})
+  });
+  
+</script>

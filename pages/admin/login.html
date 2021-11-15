@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+  <title>CipX</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Projects made by CipX"/>
+  <meta charset="utf-8" />
+  <link
+    rel="icon"
+    href="https://cdn.glitch.com/063ea47b-80b4-4d26-baec-d75aa554f18a%2F1521095076_4b57b4899aa09cd521bd0116527b62465a412119_hq.gif?v=1582899047276"
+    type="image/gif"
+    sizes="16x16"
+  />
+  
+<head>
+  
+
+  <title>Login Form</title>
+</head>
+
+<body>
+  
+<div id="div-login" class="w3-center">
+  <form id="login-form">
+    <h2>Login Form</h2>
+
+    <label for="username">Username:</label>
+    <input  type="text" placeholder="Enter username..." id="username" />
+    <br>
+    <label for="password">Password:</label>
+    <input type="password" placeholder="Enter password..." id="password" />
+    <br>
+    <input id="login" type="submit" value="Login" />
+  </form>  
+</div>
+  
+  <script> 
+   function sendAPI(usr, pwd) {
+    var timerStart = performance.now();
+    var req = new XMLHttpRequest()
+    req.open('POST', '/api/loogin')
+    req.setRequestHeader('Content-Type', "application/json")
+    req.send(JSON.stringify({usr: usr, pwd}))
+    
+    req.addEventListener("load", () => {
+      t1 = performance.now();
+      console.log("Request done! Took "+ Math.round(t1 - timerStart) + " ms")
+      var data = req.responseText
+      document.location=data
+    })
+    
+    req.addEventListener("error", (e) => {
+      console.log("Fucking error!")
+      console.log(e)
+    })
+  }
+    
+   var lbtn = document.getElementById("login");
+   var usr = document.getElementById("username");
+   var pwd = document.getElementById("password");
+   lbtn.addEventListener("click", function(event) {
+         event.preventDefault();
+         sendAPI(usr.value, pwd.value)
+         //alert( + ":" + )
+   });
+  </script>
+</body>
+
+</html>

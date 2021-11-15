@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/blazeface"></script>
+        <style>
+            .switch {
+              position: relative;
+              display: inline-block;
+              width: 60px;
+              height: 34px;
+            }
+            
+            .switch input { 
+              opacity: 0;
+              width: 0;
+              height: 0;
+            }
+            
+            .slider {
+              position: absolute;
+              cursor: pointer;
+              top: 0;
+              left: 0;
+              right: 0;
+              bottom: 0;
+              background-color: #ccc;
+              -webkit-transition: .4s;
+              transition: .4s;
+            }
+            
+            .slider:before {
+              position: absolute;
+              content: "";
+              height: 26px;
+              width: 26px;
+              left: 4px;
+              bottom: 4px;
+              background-color: white;
+              -webkit-transition: .4s;
+              transition: .4s;
+            }
+            
+            input:checked + .slider {
+              background-color: #2196F3;
+            }
+            
+            input:focus + .slider {
+              box-shadow: 0 0 1px #2196F3;
+            }
+            
+            input:checked + .slider:before {
+              -webkit-transform: translateX(26px);
+              -ms-transform: translateX(26px);
+              transform: translateX(26px);
+            }
+            
+            /* Rounded sliders */
+            .slider.round {
+              border-radius: 34px;
+            }
+            
+            .slider.round:before {
+              border-radius: 50%;
+            }
+            </style>
+    </head>
+
+    <body>
+        <video id="video" autoplay></video>
+        <canvas id="canvas" width="1920px" height="1080px"></canvas>
+        <img style="display: none;" src="http://www.caleaeuropeana.ro/wp-content/uploads/2015/01/Anonymous.jpg">
+        <label class="switch">
+            <input id="switch" type="checkbox">
+            <span class="slider round"></span>
+        </label>
+        <!-- <label for="myCheck">Hide face:</label> 
+        <input type="checkbox" id="hide" onclick="myFunction()" checked>
+        <label for="myCheck">Track face:</label> 
+        <input type="checkbox" id="track" onclick="myFunction()"> -->
+
+        <script>
+var hide = true
+var checkBox = document.getElementById("switch");
+var hide, track
+var video = document.getElementById('video');
+var canvas = document.getElementById("canvas");
+var img = document.getElementsByTagName("img")[0];
+canvas.style.display = "none";
+var ctx = canvas.getContext("2d")
+ctx.lineWidth = "4";
+ctx.strokeStyle = "red";
+const setup = function(){
+    navigator.mediaDevices.getUserMedia({
+        audio: false,
+        video: {
+            width: { ideal: 4096 },
+            height: { ideal: 2160 } 
+        } 
+    }).then((stream) => {
+        video.srcObject = stream;
+        console.log(stream)
+    });
+}
+
+const detect = async () => {
+    const prediction = await model.estimateFaces(video, false);
+    hide = (!checkBox.checked)
+    track = checkBox.checked
+    //console.log(prediction)
+
+    //ctx.scale(2, 2)
+    if(prediction.length<=0) {
+        ctx.drawImage(video, 0, 0, 1920, 1080)
+    }
+    if(!hide) {
+        ctx.clearRect(0, 0, 1920, 1080);
+        ctx.drawImage(video, 
+        prediction[0].topLeft[0],
+                prediction[0].topLeft[1],
+                prediction[0].bottomRight[0] - prediction[0].topLeft[0],
+                prediction[0].bottomRight[1] - prediction[0].topLeft[1],
+                0, 0, 1920, 1080)
+    } else if(hide && prediction.length>0){
+        ctx.drawImage(video, 0, 0, 1920, 1080)
+        ctx.beginPath();
+        prediction.forEach(pred => {
+            ctx.rect(
+            pred.topLeft[0],
+            pred.topLeft[1],
+            pred.bottomRight[0] - pred.topLeft[0],
+            pred.bottomRight[1] - pred.topLeft[1]
+        );
+        })
+        ctx.stroke();
+        //ctx.clearRect(0, 0, 1920, 1080);
+    }
+}
+
+setup();
+video.addEventListener("loadeddata", async () => {
+    model = await blazeface.load();
+    setInterval(detect, 10);
+    setTimeout(function(){
+        video.style.display = "none";
+        canvas.style.display = "block";
+    }, 2000);
+})
+
+        </script>
+    </body>
+</html>

@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      rel="icon"
+      href="https://cdn.discordapp.com/icons/630773136689725440/8386e82f24b8c4c647f637edf7040c7a.png"
+      type="image/gif"
+      sizes="16x16"
+    />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <title>Clicker Game</title>
+
+    <style>
+            body {
+              overflow: hidden;
+              background-image: url("https://cdn.glitch.com/2eb6e46f-6c9f-4f7d-a118-fd8b3d772394%2Fcool-background.png");
+              margin: 0;
+              padding: 0;
+              font-family: sans-serif;
+              margin-left: auto;
+              margin-right: auto;
+            }
+            #lin {
+              position: absolute;
+              margin-left: auto;
+              margin-right: auto;
+              text-align: center;
+              height: 100%;
+              width: 100%;
+                padding: 200px 0;
+            }
+
+      .noselect {
+        -webkit-touch-callout: none; /* iOS Safari */
+          -webkit-user-select: none; /* Safari */
+           -khtml-user-select: none; /* Konqueror HTML */
+             -moz-user-select: none; /* Old versions of Firefox */
+              -ms-user-select: none; /* Internet Explorer/Edge */
+                  user-select: none; /* Non-prefixed version, currently
+                                        supported by Chrome, Edge, Opera and Firefox */
+      }
+
+      .butt {
+        padding: 15px 25px;
+        font-size: 24px;
+        text-align: center;
+        cursor: pointer;
+        outline: none;
+        color: white;
+        background-color: #4CAF50;
+        border: line;
+        border-radius: 15px;
+        box-shadow: 0 9px #999;
+      }
+
+      .btn:focus {
+        outline: none;
+        box-shadow: none;
+      }
+
+      .butt:hover {background-color: #3e8e41}
+
+      .butt:active {
+        background-color: #3e8e41;
+        box-shadow: 0 5px #666;
+        transform: translateY(4px);
+      }
+
+            .box {
+              border-radius: 10%;
+              width: 300px;
+              padding-top: 40px;
+              padding-left: 40px;
+              padding-right: 40px;
+              padding-bottom: 10px;
+              position: absolute;
+              top: 50%;
+              left: 50%;
+              transform: translate(-50%, -50%);
+              background: #191919;
+              text-align: center;
+            }
+            .box h1 {
+              color: white;
+              text-transform: uppercase;
+              font-weight: 500;
+            }
+            .box input[type="text"],
+            .box input[type="password"] {
+              border: 0;
+              background: none;
+              display: block;
+              margin: 20px auto;
+              text-align: center;
+              border: 2px solid #3498db;
+              padding: 14px 10px;
+              width: 200px;
+              outline: none;
+              color: white;
+              border-radius: 24px;
+              transition: 0.25s;
+            }
+            .box input[type="text"]:focus,
+            .box input[type="password"]:focus {
+              width: 280px;
+              border-color: #2ecc71;
+            }
+            .box input[type="submit"] {
+              border: 0;
+              background: none;
+              display: block;
+              margin: 20px auto;
+              text-align: center;
+              border: 2px solid #2ecc71;
+              padding: 14px 40px;
+              outline: none;
+              color: white;
+              border-radius: 24px;
+              transition: 0.25s;
+              cursor: pointer;
+            }
+            .box input[type="submit"]:hover {
+              background: #2ecc71;
+            }
+    </style>
+  </head>
+  <body>
+    <form id="lon" class="noselect box">
+      <h1>Login</h1>
+      <input id="id" type="text" name="" placeholder="Your Discord ID" />
+      <input id="strt" type="submit" name="" value="Login" />
+      <br />
+      <label style="vertical-align: bottom; color:white; font-size: 12px;"
+        >2020 - CipX</label
+      >
+    </form>
+    <div style="display: none;" class="noselect" id="lin">
+      <div>
+        <button style="position: absolute; left: 850px; top:10%" id="butt" class="butt">Click me</button>
+      </div>
+      <div>
+        <p id="p">0 Points</p>
+        <button onclick="upgrade()" id="u">Upgrade for 100</button>
+        <button id="fup">Force Update Points</button>
+      </div>
+    </div>
+    <script>
+      var loggedIn = false;
+      var butt = document.getElementById("butt")
+      var id = document.getElementById("id");
+      var strt = document.getElementById("strt");
+      var lon = document.getElementById("lon");
+      var lin = document.getElementById("lin");
+      var fup = document.getElementById("fup");
+      var isCheater = false;
+      var x;
+      var lv;
+
+      function getMax (arr) {
+    // The largest number at first should be the first element or null for empty array
+    var largest = arr[0] || null;
+
+    // Current number, handled by the loop
+    var number = null;
+    for (var i = 0; i < arr.length; i++) {
+        // Update current number
+        number = arr[i];
+
+        // Compares stored largest number with current number, stores the largest one
+        largest = Math.max(largest, number);
+    }
+
+    return largest;
+}
+
+      function resizeHandler(){
+        butt.style.left=((window.innerWidth/2)-80)+"px"
+      }
+var nary = [];
+      function testS(times){
+    var x;
+    var i = 0;
+    console.warn("---------------------------");
+    for(x=0; x<times; x++){
+        var n = Math.floor(Math.random() * (window.innerWidth - 220)); 
+        nary.push(n);
+        if(n<(window.innerWidth-200)){
+            console.log(`${x+1} ok ( `+n+`px )`); i++
+        }else{
+            console.log(`${x+1} not ok ( `+n+`px )`);
+        }
+    }
+    console.log(i+"/"+times+` success (${percent(i, times)}%)`); 
+    console.log("Max number was: "+getMax(nary)+"px");
+    nary = []
+    console.warn("---------------------------");
+    x=0;
+    i=0;
+    n=0;
+}
+
+function percent(e, t){
+    var perc="";
+    if(isNaN(t) || isNaN(e)){
+        perc=" ";
+       }else{
+       perc = ((e/t) * 100).toFixed(2);
+       }
+    return perc
+}
+
+      window.addEventListener("resize", resizeHandler)
+
+      $("#butt").css({
+        left: ((window.innerWidth/2)-80)+"px"
+      })
+
+      $("#butt").on({
+    click: function() {
+      var sta = (new Date()).getTime();
+      var pos = Math.floor(Math.random() * (window.innerWidth - 120));
+      if (isCheater == "true") {
+          console.log("Cheats detected!");
+          document.getElementsByClassName("butt")[0].disabled = true;
+          document.location = "/game";
+        } else {
+          x += lv;
+          textUpdate();
+        }
+      if(lv>=2){
+        $(this).stop().animate({"left": pos+"px"})
+      }
+      var sto = (new Date()).getTime()
+      console.log((sto-sta)+ ` ms - ( pos: ${pos+"px"}, space left: ${window.innerWidth - pos}px )`)
+    }});
+
+      strt.addEventListener("click", function() {
+        event.preventDefault();
+        if (id.value == "") {
+          return;
+        }
+        if (isNaN(id.value)) {
+          alert("no");
+        } else {
+        }
+        $.ajax({
+          type: "get",
+          url: "/api/game/json/" + id.value,
+          contentType: "application/json",
+          xhrFields: {
+            withCredentials: false
+          },
+          headers: {},
+          success: function(data) {
+            x = parseInt(data.points);
+            lv = parseInt(data.multi);
+            isCheater = data.isCheater;
+            if (isCheater == "true") {
+              loggedIn = false;
+              alert(
+                "You have been banned for cheating, if you think this is an error, please contact the Discord Server Owner."
+              );
+            } else {
+              loggedIn = true;
+              lon.style.display = "none";
+              lin.style.display = "block";
+            }
+          },
+          error: function() {
+            console.log(
+              "We are sorry but our servers are having an issue right now"
+            );
+          }
+        });
+      });
+
+      fup.addEventListener("click", function() {
+        $.ajax({
+          type: "get",
+          url:
+            "/api/game/json/" +
+            id.value +
+            "/points/" +
+            x +
+            "/multi/" +
+            lv,
+          contentType: "application/json",
+          xhrFields: {
+            withCredentials: false
+          },
+          headers: {},
+          success: function(data) {},
+          error: function() {
+            console.log(
+              "We are sorry but our servers are having an issue right now"
+            );
+          }
+        });
+      });
+      var z = 0;
+      setInterval(async function() {
+        if (loggedIn == true) {
+          var star = (new Date()).getTime();
+          await $.ajax({
+            type: "get",
+            url:
+              "/api/game/json/" +
+              id.value +
+              "/points/" +
+              x +
+              "/multi/" +
+              lv,
+            contentType: "application/json",
+            xhrFields: {
+              withCredentials: false
+            },
+            headers: {},
+            success: function(data) {},
+            error: function() {
+              console.log(
+                "We are sorry but our servers are having an issue right now"
+              );
+            }
+          });
+
+          
+          await $.ajax({
+            type: "get",
+            url: "/api/game/json/" + id.value,
+            contentType: "application/json",
+            xhrFields: {
+              withCredentials: false
+            },
+            headers: {},
+            success: function(data) {
+              isCheater = data.isCheater;
+            },
+            error: function() {
+              console.log(
+                "We are sorry but our servers are having an issue right now"
+              );
+            }
+          });
+          var stop = (new Date()).getTime()
+          var ping = (stop-star)
+          console.log("Server ping - "+ping+" ms")
+        }
+      }, 30 * 1000);
+      setInterval(function() {
+        textUpdate();
+        checkUpgrade();
+      }, 1000);
+
+      function textUpdate() {
+        document.getElementById("p").innerHTML =
+          "Points: " + x + "  (|)  " + "Level (PPC): " + lv;
+      }
+
+      function upgrade() {
+        //DEFAULT LV 1
+        if (x >= 200 && lv <= 4) {
+          //LV 2
+          lv++;
+          x -= 200;
+          return;
+        }
+
+        if (x >= 500 && lv >= 5 && lv <= 7) {
+          //LV 4
+          lv++;
+          x -= 500;
+          return;
+        }
+
+        if (x >= 1000 && lv >= 8 && lv <= 13) {
+          //LV 8
+          lv++;
+          x -= 1000;
+          return;
+        }
+
+        if (x >= 3000 && lv >= 14 && lv <= 20) {
+          //LV 8
+          lv++;
+          x -= 3000;
+          return;
+        }
+
+        if (x >= 6000 && lv >= 21 && lv <= 26) {
+          //LV 8
+          lv++;
+          x -= 6000;
+          return;
+        }
+
+        if (lv == 27) {
+          console.log("Max Level Reached");
+        }
+      }
+
+      function checkUpgrade() {
+        if (lv <= 4) {
+          document.getElementById("u").innerHTML =
+            "Upgrade to level " + `${lv + 1}` + " for 200";
+        }
+
+        if (lv >= 5 && lv <= 7) {
+          document.getElementById("u").innerHTML =
+            "Upgrade to level " + `${lv + 1}` + " for 500";
+        }
+
+        if (lv >= 8 && lv <= 13) {
+          document.getElementById("u").innerHTML =
+            "Upgrade to level " + `${lv + 1}` + " for 1000";
+        }
+
+        if (lv >= 14 && lv <= 20) {
+          document.getElementById("u").innerHTML =
+            "Upgrade to level " + `${lv + 1}` + " for 3000";
+        }
+
+        if (lv >= 21 && lv <= 26) {
+          document.getElementById("u").innerHTML =
+            "Upgrade to level " + `${lv + 1}` + " for 6000";
+        }
+
+        if (lv == 27) {
+          document.getElementById("u").innerHTML = "Fully Upgraded";
+        }
+      }
+    </script>
+  </body>
+</html>
